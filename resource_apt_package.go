@@ -148,7 +148,8 @@ func (r *aptPackageResource) Delete(ctx context.Context, req resource.DeleteRequ
 }
 
 func aptInstall(name string) error {
-	cmd := exec.Command("sudo", "apt-get", "install", "-y", name)
+	cmd := exec.Command("sudo", "flock", "/var/lib/dpkg/lock-frontend",
+		"apt-get", "install", "-y", name)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("apt-get install %s: %w\n%s", name, err, string(out))
@@ -157,7 +158,8 @@ func aptInstall(name string) error {
 }
 
 func aptRemove(name string) error {
-	cmd := exec.Command("sudo", "apt-get", "remove", "-y", name)
+	cmd := exec.Command("sudo", "flock", "/var/lib/dpkg/lock-frontend",
+		"apt-get", "remove", "-y", name)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("apt-get remove %s: %w\n%s", name, err, string(out))
